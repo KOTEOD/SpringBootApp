@@ -16,7 +16,7 @@ public class SettingsManager {
             return objectMapper.readValue(new File(filePath), Settings.class);
         } catch (IOException e) {
             e.printStackTrace();
-            return new Settings(); // Возвращает пустые настройки в случае ошибки
+            return new Settings();
         }
     }
 

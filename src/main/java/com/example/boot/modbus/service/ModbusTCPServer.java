@@ -65,14 +65,12 @@ public class ModbusTCPServer {
 
     private byte[] processRequest(byte[] request) {
         try {
-            // Преобразование запроса Modbus TCP в Modbus RTU
             byte[] rtuRequest = modbusRTUConverter.convertToRTU(request);
 
-            // Отправка запроса через COM-порт и получение ответа
             comPortManager.writeData(rtuRequest);
             byte[] rtuResponse = comPortManager.readData();
 
-            // Преобразование ответа Modbus RTU обратно в Modbus TCP
+
             return modbusRTUConverter.convertToTCP(rtuResponse);
         } catch (Exception e) {
             e.printStackTrace();
