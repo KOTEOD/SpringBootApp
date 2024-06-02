@@ -1,4 +1,4 @@
-package com.example.boot.SpringBootApp;
+package com.example.boot.modbus;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

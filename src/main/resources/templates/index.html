@@ -7,8 +7,8 @@
     <title> Users </title>
 </head>
 <body>
-<p th:text=" 'ID: ' + ${user.id}"></p>
-<p th:text=" 'NAME: ' + ${user.name}"></p>
+<p th:text="'ID: ' + ${user.id}"></p>
+<p th:text="'NAME: ' + ${user.name}"></p>
 <p th:text="'AGE: '+ ${user.age}"></p>
 
 <a th:href="@{/edit(id=${user.id})}">Edit User</a>
