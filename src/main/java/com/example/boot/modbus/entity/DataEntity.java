@@ -1,16 +1,11 @@
 package com.example.boot.modbus.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 @Table
-@Data
+
 @Entity
 public class DataEntity {
     @Id
@@ -18,4 +13,21 @@ public class DataEntity {
     private Long id;
     @Column
     private byte[] data;
+
+    public DataEntity(Long id, byte[] data) {
+        this.id = id;
+        this.data = data;
+    }
+
+    public DataEntity() {
+
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
 }

@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SettingsRepository extends JpaRepository<SettingsEntity, Long> {
+    SettingsEntity findTopByOrderByIdDesc();
     // Методы для взаимодействия с настройками в базе данных
 }

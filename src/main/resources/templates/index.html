@@ -1,24 +1,99 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> Users </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modbus TCP Server Control Panel</title>
 </head>
 <body>
-<p th:text="'ID: ' + ${user.id}"></p>
-<p th:text="'NAME: ' + ${user.name}"></p>
-<p th:text="'AGE: '+ ${user.age}"></p>
+<h1>Modbus TCP Server Control Panel</h1>
 
-<a th:href="@{/edit(id=${user.id})}">Edit User</a>
-<hr>
-<a th:href="@{/}">User all</a>
-<br/>
-<br/>
-<form method="GET" action="/delete">
-    <input type="hidden" name="id" th:value="${user.id}">
-    <input type="submit" value="Delete">
+<h2>Current Settings</h2>
+<div id="currentSettings"></div>
+
+<h2>Update Settings</h2>
+<form id="updateSettingsForm">
+    <label for="portName">Port Name:</label>
+    <input type="text" id="portName" name="portName" required><br>
+
+    <label for="baudRate">Baud Rate:</label>
+    <input type="number" id="baudRate" name="baudRate" required><br>
+
+    <label for="dataBits">Data Bits:</label>
+    <input type="number" id="dataBits" name="dataBits" required><br>
+
+    <label for="stopBits">Stop Bits:</label>
+    <input type="number" id="stopBits" name="stopBits" required><br>
+
+    <label for="parity">Parity:</label>
+    <input type="text" id="parity" name="parity" required><br>
+
+    <button type="submit">Update Settings</button>
 </form>
+
+<h2>Modbus TCP Server Control</h2>
+<button id="startServer">Start Server</button>
+<button id="stopServer">Stop Server</button>
+
+<script>
+    // Функция для загрузки текущих настроек
+    function loadSettings() {
+        fetch('/modbus')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('currentSettings').innerHTML = `
+                        <p><strong>Port Name:</strong> ${data.portName}</p>
+                        <p><strong>Baud Rate:</strong> ${data.baudRate}</p>
+                        <p><strong>Data Bits:</strong> ${data.dataBits}</p>
+                        <p><strong>Stop Bits:</strong> ${data.stopBits}</p>
+                        <p><strong>Parity:</strong> ${data.parity}</p>
+                    `;
+            })
+            .catch(error => console.error('Error loading settings:', error));
+    }
+
+    // Обработчик отправки формы для обновления настроек
+    document.getElementById('updateSettingsForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const settings = {
+            portName: formData.get('portName'),
+            baudRate: parseInt(formData.get('baudRate')),
+            dataBits: parseInt(formData.get('dataBits')),
+            stopBits: parseInt(formData.get('stopBits')),
+            parity: formData.get('parity')
+        };
+
+        fetch('/modbus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settings)
+        })
+            .then(() => {
+                alert('Settings updated successfully');
+                loadSettings();
+            })
+            .catch(error => console.error('Error updating settings:', error));
+    });
+
+    // Обработчики для кнопок управления сервером
+    document.getElementById('startServer').addEventListener('click', function() {
+        fetch('/modbus/start', { method: 'POST' })
+            .then(() => alert('Modbus TCP server started'))
+            .catch(error => console.error('Error starting server:', error));
+    });
+
+    document.getElementById('stopServer').addEventListener('click', function() {
+        fetch('/modbus/stop', { method: 'POST' })
+            .then(() => alert('Modbus TCP server stopped'))
+            .catch(error => console.error('Error stopping server:', error));
+    });
+
+    // Загрузка текущих настроек при загрузке страницы
+    loadSettings();
+</script>
 </body>
 </html>

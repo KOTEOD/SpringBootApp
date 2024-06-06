@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 
 @Component
-public class SQLiteDatabaseManagerImpl implements SQLiteService {
+public class SQLiteDatabaseManagerImpl {
     private final DataRepository dataRepository;
     private final SettingsRepository settingsRepository;
 

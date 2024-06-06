@@ -1,8 +1,12 @@
 package com.example.boot.modbus.service;
 
+import com.example.boot.modbus.entity.SettingsEntity;
+import com.example.boot.modbus.repository.SettingsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,19 +15,37 @@ import java.net.Socket;
 public class ModbusTCPServer {
     private static final int DEFAULT_PORT = 502;
 
-    private final ModbusRTUConverter modbusRTUConverter;
+    private final ModbusRTUConverter rtuConverter;
     private final COMPortManager comPortManager;
+    private final SettingsRepository settingsRepository;
 
-    ModbusTCPServer(ModbusRTUConverter modbusRTUConverter,COMPortManager comportManager) {
-        this.modbusRTUConverter = modbusRTUConverter;
-        this.comPortManager = comportManager;
+    @Autowired
+    public ModbusTCPServer(ModbusRTUConverter rtuConverter, COMPortManager comPortManager, SettingsRepository settingsRepository) {
+        this.rtuConverter = rtuConverter;
+        this.comPortManager = comPortManager;
+        this.settingsRepository = settingsRepository;
     }
 
     @PostConstruct
     public void init() {
-        startServer(DEFAULT_PORT);
+        // Загрузка настроек из базы данных
+        SettingsEntity settings = settingsRepository.findTopByOrderByIdDesc();
+
+        // Открытие COM-порта с загруженными настройками
+        try {
+            comPortManager.openPort(settings.getPortName(), settings.getBaudRate(), settings.getDataBits(), settings.getStopBits(), settings.getParity());
+            startServer(DEFAULT_PORT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    // Запуск сервера с многопоточным режимом соеденений
+
+    @PreDestroy
+    public void shutdown() {
+        // Закрытие COM-порта
+        comPortManager.closePort();
+    }
+
     public void startServer(int port) {
         new Thread(() -> {
             try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -36,7 +58,7 @@ public class ModbusTCPServer {
             }
         }).start();
     }
-    //обработка соеденения с клиентом, принятие и передача запросов
+
     private void handleClient(Socket clientSocket) {
         try (InputStream input = clientSocket.getInputStream();
              OutputStream output = clientSocket.getOutputStream()) {
@@ -49,7 +71,7 @@ public class ModbusTCPServer {
             e.printStackTrace();
         }
     }
-    //чтение данные запроса добавление в масив и возвращение
+
     private byte[] readRequest(InputStream input) throws IOException {
         byte[] buffer = new byte[256];
         int bytesRead = input.read(buffer);
@@ -57,7 +79,7 @@ public class ModbusTCPServer {
         System.arraycopy(buffer, 0, request, 0, bytesRead);
         return request;
     }
-    //отправляет ответные данные в выходной поток
+
     private void sendResponse(OutputStream output, byte[] response) throws IOException {
         output.write(response);
         output.flush();
@@ -65,13 +87,10 @@ public class ModbusTCPServer {
 
     private byte[] processRequest(byte[] request) {
         try {
-            byte[] rtuRequest = modbusRTUConverter.convertToRTU(request);
-
+            byte[] rtuRequest = rtuConverter.convertToRTU(request);
             comPortManager.writeData(rtuRequest);
             byte[] rtuResponse = comPortManager.readData();
-
-
-            return modbusRTUConverter.convertToTCP(rtuResponse);
+            return rtuConverter.convertToTCP(rtuResponse);
         } catch (Exception e) {
             e.printStackTrace();
             return new byte[]{};
