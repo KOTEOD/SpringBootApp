@@ -1,33 +1,35 @@
 package com.example.boot.modbus.entity;
-
-
-
 import javax.persistence.*;
-
-@Table
 
 @Entity
 public class DataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     private byte[] data;
+
+    public DataEntity() {}
 
     public DataEntity(Long id, byte[] data) {
         this.id = id;
         this.data = data;
     }
 
-    public DataEntity() {
-
+    public Long getId() {
+        return id;
     }
 
-    public void setData(byte[] data) {
-        this.data = data;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public byte[] getData() {
         return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 }

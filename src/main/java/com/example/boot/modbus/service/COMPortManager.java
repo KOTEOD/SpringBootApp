@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class COMPortManager {
 
-    COMPortManager (){}
-
     private SerialPort serialPort;
 
     public void openPort(String portName, int baudRate, int dataBits, int stopBits, int parity) {

@@ -1,12 +1,6 @@
 package com.example.boot.modbus.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Table
+import javax.persistence.*;
 
 @Entity
 public class SettingsEntity {
@@ -21,18 +15,15 @@ public class SettingsEntity {
     private int dataBits;
     private int stopBits;
     private int parity;
-    
 
-    public SettingsEntity() {
-        
+    public SettingsEntity() {}
+
+    public Long getId() {
+        return id;
     }
 
-    public String getPortName() {
-        return portName;
-    }
-
-    public void setPortName(String portName) {
-        this.portName = portName;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getSettingsJson() {
@@ -41,6 +32,14 @@ public class SettingsEntity {
 
     public void setSettingsJson(String settingsJson) {
         this.settingsJson = settingsJson;
+    }
+
+    public String getPortName() {
+        return portName;
+    }
+
+    public void setPortName(String portName) {
+        this.portName = portName;
     }
 
     public int getBaudRate() {
@@ -74,13 +73,4 @@ public class SettingsEntity {
     public void setParity(int parity) {
         this.parity = parity;
     }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getId() {
-        return id;
-    }
 }
-

@@ -2,10 +2,10 @@ package com.example.boot.modbus.service;
 
 import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Component;
+
 @Component
 public class ModbusRTUConverter {
-
-    ModbusRTUConverter() {}
 
     public byte[] convertToRTU(byte[] tcpRequest) {
         if (tcpRequest.length < 8) {

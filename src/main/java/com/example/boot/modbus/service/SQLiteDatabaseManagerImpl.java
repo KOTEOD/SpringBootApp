@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 
 @Component
-public class SQLiteDatabaseManagerImpl {
+public class SQLiteDatabaseManagerImpl implements SQLiteService {
     private final DataRepository dataRepository;
     private final SettingsRepository settingsRepository;
 
@@ -21,6 +21,7 @@ public class SQLiteDatabaseManagerImpl {
     }
 
     @Transactional
+    @Override
     public void saveData(byte[] data) {
         DataEntity entity = new DataEntity();
         entity.setData(data);
@@ -28,12 +29,14 @@ public class SQLiteDatabaseManagerImpl {
     }
 
     @Transactional
+    @Override
     public String readSettings() {
         SettingsEntity entity = settingsRepository.findById(1L).orElse(null);
         return entity != null ? entity.getSettingsJson() : "{}";
     }
 
     @Transactional
+    @Override
     public void updateSettings(String jsonSettings) {
         SettingsEntity entity = settingsRepository.findById(1L).orElse(null);
         if (entity == null) {
